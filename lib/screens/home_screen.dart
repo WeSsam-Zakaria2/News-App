@@ -26,17 +26,24 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xff202020),
+      backgroundColor: Color.fromARGB(255, 2, 12, 24),
       appBar: AppBar(
-        backgroundColor: Color(0xff1877F2),
-        title: Text('News App', style: Theme.of(context).textTheme.bodyLarge),
+        backgroundColor: Color.fromARGB(255, 8, 46, 94),
+        title: Text(
+          'News App',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 30,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         centerTitle: true,
       ),
       body: ListView.builder(
         itemBuilder: (context, index) {
           return ImageItemWidget(
-            image: data['articles'][index]['urlToImage'],
-            title: data['articles'][index]['title'],
+            image: data['articles'][index]['urlToImage'] ?? dummyImage,
+            title: data['articles'][index]['title'] ?? '',
             onTap: () {},
           );
         },
