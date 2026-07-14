@@ -18,12 +18,6 @@ class _HomeScreenState extends State<HomeScreen> {
   };
 
   @override
-  initState() {
-    super.initState();
-    getNews();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 2, 12, 24),
@@ -39,23 +33,44 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         centerTitle: true,
       ),
-      body: ListView.builder(
-        itemBuilder: (context, index) {
-          return ImageItemWidget(
-            image: data['articles'][index]['urlToImage'] ?? dummyImage,
-            title: data['articles'][index]['title'] ?? '',
-            onTap: () {},
-          );
+
+      body: FutureBuilder(
+        future: Api.getNews(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                'Error:Please try again later',
+                style: TextStyle(
+                  color: const Color.fromARGB(255, 170, 37, 37),
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            );
+          }
+          if (snapshot.hasData) {
+            List<dynamic> data = snapshot.data?['articles'] ?? [];
+            return ListView.builder(
+              itemBuilder: (context, index) {
+                return ImageItemWidget(
+                  image: data[index]['urlToImage'],
+                  title: data[index]['title'],
+                  onTap: () {},
+                );
+              },
+              itemCount: data.length,
+            );
+          } else {
+            return Center(child: Text('No data available'));
+          }
         },
-        itemCount: (data['articles'] as List<dynamic>).length,
       ),
     );
-  }
-
-  void getNews() async {
-    data = await Api.getNews();
-
-    setState(() {});
   }
 }
 
