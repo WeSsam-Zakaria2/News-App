@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:news_app/data/api_file.dart';
 import 'package:news_app/widgets/image_item_widget.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -10,6 +11,17 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  Map<String, dynamic> data = {
+    "status": "ok",
+    "totalResults": 5596,
+    "articles": [],
+  };
+  @override
+  initState() {
+    super.initState();
+    getNews();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,14 +34,19 @@ class _HomeScreenState extends State<HomeScreen> {
       body: ListView.builder(
         itemBuilder: (context, index) {
           return ImageItemWidget(
-            image: dummyImage,
-            title: "Dynamic Title $index",
+            image: data['articles'][index]['urlToImage'],
+            title: data['articles'][index]['title'],
             onTap: () {},
           );
         },
-        itemCount: 30,
+        itemCount: data['articles'].length,
       ),
     );
+  }
+
+  void getNews() async {
+    data = await Api.getNews();
+    setState(() {});
   }
 }
 
