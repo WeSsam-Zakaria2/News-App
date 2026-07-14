@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:news_app/data/api_file.dart';
 import 'package:news_app/widgets/image_item_widget.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -10,24 +11,64 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  Map<String, dynamic> data = {
+    "status": "ok",
+    "totalResults": 5588,
+    "articles": [],
+  };
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xff202020),
+      backgroundColor: Color.fromARGB(255, 2, 12, 24),
       appBar: AppBar(
-        backgroundColor: Color(0xff1877F2),
-        title: Text('News App', style: Theme.of(context).textTheme.bodyLarge),
+        backgroundColor: Color.fromARGB(255, 8, 46, 94),
+        title: Text(
+          'News App',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 30,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         centerTitle: true,
       ),
-      body: ListView.builder(
-        itemBuilder: (context, index) {
-          return ImageItemWidget(
-            image: dummyImage,
-            title: "Dynamic Title $index",
-            onTap: () {},
-          );
+
+      body: FutureBuilder(
+        future: Api.getNews(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                'Error:Please try again later',
+                style: TextStyle(
+                  color: const Color.fromARGB(255, 170, 37, 37),
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            );
+          }
+          if (snapshot.hasData) {
+            List<dynamic> data = snapshot.data?['articles'] ?? [];
+            return ListView.builder(
+              itemBuilder: (context, index) {
+                return ImageItemWidget(
+                  image: data[index]['urlToImage'],
+                  title: data[index]['title'],
+                  onTap: () {},
+                );
+              },
+              itemCount: data.length,
+            );
+          } else {
+            return Center(child: Text('No data available'));
+          }
         },
-        itemCount: 30,
       ),
     );
   }
