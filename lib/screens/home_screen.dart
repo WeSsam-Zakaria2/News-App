@@ -13,9 +13,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   Map<String, dynamic> data = {
     "status": "ok",
-    "totalResults": 5596,
+    "totalResults": 5588,
     "articles": [],
   };
+
   @override
   initState() {
     super.initState();
@@ -39,13 +40,14 @@ class _HomeScreenState extends State<HomeScreen> {
             onTap: () {},
           );
         },
-        itemCount: data['articles'].length,
+        itemCount: (data['articles'] as List<dynamic>).length,
       ),
     );
   }
 
   void getNews() async {
     data = await Api.getNews();
+
     setState(() {});
   }
 }

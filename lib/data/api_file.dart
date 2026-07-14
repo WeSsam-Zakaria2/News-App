@@ -8,7 +8,7 @@ abstract class Api {
   static Future<Map<String, dynamic>> getNews() async {
     Uri url = Uri.https('newsapi.org', '/v2/everything', {
       'q': 'tesla',
-      'from': '2026-06-12',
+      'from': '2026-06-16',
       'sortBy': 'publishedAt',
       'apiKey': '549c78ef1ec6401883c47daf8c5acb04',
     });
