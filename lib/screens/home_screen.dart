@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:news_app/data/api_file.dart';
+import 'package:news_app/data/api/api.dart';
+import 'package:news_app/data/models/news_models.dart';
 import 'package:news_app/widgets/image_item_widget.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -34,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
         centerTitle: true,
       ),
 
-      body: FutureBuilder(
+      body: FutureBuilder<NewsModel>(
         future: Api.getNews(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -54,19 +55,31 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           }
           if (snapshot.hasData) {
-            List<dynamic> data = snapshot.data?['articles'] ?? [];
+            List<Articles> articles = snapshot.data!.articles ?? [];
             return ListView.builder(
               itemBuilder: (context, index) {
                 return ImageItemWidget(
-                  image: data[index]['urlToImage'],
-                  title: data[index]['title'],
+                  image: articles[index].urlToImage ?? dummyImage,
+                  title: articles[index].title ?? '',
                   onTap: () {},
                 );
               },
-              itemCount: data.length,
+              itemCount: articles.length,
             );
           } else {
-            return Center(child: Text('No data available'));
+            return Center(
+              child: Container(
+                color: Color.fromARGB(255, 88, 3, 3),
+                child: Text(
+                  'No data available',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            );
           }
         },
       ),
