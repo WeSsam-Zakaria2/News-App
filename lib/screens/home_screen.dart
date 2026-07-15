@@ -66,7 +66,19 @@ class _HomeScreenState extends State<HomeScreen> {
               itemCount: data.length,
             );
           } else {
-            return Center(child: Text('No data available'));
+            return Center(
+              child: Container(
+                color: Color.fromARGB(255, 88, 3, 3),
+                child: Text(
+                  'No data available',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            );
           }
         },
       ),
