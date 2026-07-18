@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:news_app/api/api.dart';
-import 'package:news_app/core/api/result_api.dart';
-import 'package:news_app/features/Home/data/models/news_models.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/features/Home/view/widgets/image_item_widget.dart';
+import 'package:news_app/features/Home/view_model/home_cubit.dart';
+import 'package:news_app/features/Home/view_model/home_state.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,115 +13,53 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Map<String, dynamic> data = {
-    "status": "ok",
-    "totalResults": 5588,
-    "articles": [],
-  };
-
-  @override
-  void initState() {
-    super.initState();
-    fechNews();
-  }
-
-  List<Articles> articles = [];
-  bool isLoading = true;
-  String? errorMessage;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color.fromARGB(255, 2, 12, 24),
-      appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 8, 46, 94),
-        title: Text(
-          'News App',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 30,
-            fontWeight: FontWeight.bold,
+    return BlocProvider<HomeCubit>(
+      create: (context) => HomeCubit()..fetchNews(),
+
+      child: Scaffold(
+        backgroundColor: Color.fromARGB(255, 2, 12, 24),
+        appBar: AppBar(
+          backgroundColor: Color.fromARGB(255, 8, 46, 94),
+          title: Text(
+            'News App',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
+            ),
           ),
+          centerTitle: true,
         ),
-        centerTitle: true,
-      ),
-      body: isLoading
-          ? Center(child: CircularProgressIndicator())
-          : errorMessage == null
-          ? ListView.builder(
-              itemBuilder: (context, index) {
-                return ImageItemWidget(
-                  image: articles[index].urlToImage ?? dummyImage,
-                  title: articles[index].title ?? '',
-                  onTap: () {},
+        body: BlocBuilder<HomeCubit, HomeState>(
+          builder: (context, state) {
+            switch (state) {
+              case HomeInitial():
+                return SizedBox.shrink();
+
+              case HomeLoading():
+                return Center(child: CircularProgressIndicator());
+
+              case HomeSuccess():
+                return ListView.builder(
+                  itemBuilder: (context, index) {
+                    return ImageItemWidget(
+                      image: state.articles[index].urlToImage ?? dummyImage,
+                      title: state.articles[index].title ?? '',
+                      onTap: () {},
+                    );
+                  },
+                  itemCount: state.articles.length,
                 );
-              },
-              itemCount: articles.length,
-            )
-          : Text(errorMessage!),
-      // FutureBuilder<NewsModel>(
-      //   future: Api.getNews(),
-      //   builder: (context, snapshot) {
-      //     if (snapshot.connectionState == ConnectionState.waiting) {
-      //       return Center(child: CircularProgressIndicator());
-      //     }
-      //     if (snapshot.hasError) {
-      //       return Center(
-      //         child: Text(
-      //           'Error:Please try again later',
-      //           style: TextStyle(
-      //             color: const Color.fromARGB(255, 170, 37, 37),
-      //             fontSize: 20,
-      //             fontWeight: FontWeight.bold,
-      //           ),
-      //           textAlign: TextAlign.center,
-      //         ),
-      //       );
-      //     }
-      //     if (snapshot.hasData) {
-      //       List<Articles> articles = snapshot.data!.articles ?? [];
-      //       return ListView.builder(
-      //         itemBuilder: (context, index) {
-      //           return ImageItemWidget(
-      //             image: articles[index].urlToImage ?? dummyImage,
-      //             title: articles[index].title ?? '',
-      //             onTap: () {},
-      //           );
-      //         },
-      //         itemCount: articles.length,
-      //       );
-      //     } else {
-      //       return Center(
-      //         child: Container(
-      //           color: Color.fromARGB(255, 88, 3, 3),
-      //           child: Text(
-      //             'No data available',
-      //             style: TextStyle(
-      //               color: Colors.white,
-      //               fontSize: 30,
-      //               fontWeight: FontWeight.bold,
-      //             ),
-      //           ),
-      //         ),
-      //       );
-      //     }
-      //   },
-      // ),
+
+              case HomeError():
+                return Center(child: Text(state.errorMessage));
+            }
+          },
+        ),
+      ),
     );
-  }
-
-  void fechNews() async {
-    var result = await Api.getNews();
-    switch (result) {
-      case Success<NewsModel>():
-        articles = result.data?.articles ?? [];
-      case Error<NewsModel>():
-        errorMessage = result.errorMessage;
-        break;
-      default:
-    }
-
-    isLoading = false;
-    setState(() {});
   }
 }
 

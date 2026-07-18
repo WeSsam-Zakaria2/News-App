@@ -6,13 +6,12 @@ import 'package:news_app/core/api/result_api.dart';
 import 'package:news_app/features/Home/data/models/news_models.dart';
 
 abstract class Api {
-  //https://newsapi.org/v2/everything?q=tesla&from=2026-06-12&sortBy=publishedAt&apiKey=549c78ef1ec6401883c47daf8c5acb04
-
   static Future<ResultApi<NewsModel?>> getNews() async {
+    //https://newsapi.org/v2/everything?q=tesla&from=2026-06-18&sortBy=publishedAt&apiKey=549c78ef1ec6401883c47daf8c5acb04
     try {
       Uri url = Uri.https('newsapi.org', '/v2/everything', {
         'q': 'tesla',
-        'from': '2026-06-16',
+        'from': '2026-06-18',
         'sortBy': 'publishedAt',
         'apiKey': '549c78ef1ec6401883c47daf8c5acb04',
       });
@@ -23,9 +22,9 @@ abstract class Api {
       var data = NewsModel.fromJson(json);
       return Success<NewsModel>(data);
     } on SocketException {
-      return Error<NewsModel>("No Enternet try again");
+      return Failure<NewsModel>("No Enternet try again");
     } catch (e) {
-      return Error<NewsModel>(e.toString());
+      return Failure<NewsModel>(e.toString());
     }
   }
 }
