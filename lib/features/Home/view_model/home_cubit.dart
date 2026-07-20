@@ -6,7 +6,16 @@ import 'package:news_app/features/Home/view_model/home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
   HomeCubit() : super(HomeInitial());
-  void fetchNews() async {
+  Future<void> intent(HomeIntent intent) async {
+    switch (intent) {
+      case FetchNewsIntent():
+        await _fetchNews(intent.id);
+      case FetchSourceIntent():
+        await _getSource();
+    }
+  }
+
+  Future<void> _fetchNews(String id) async {
     emit(HomeLoading());
 
     var result = await Api.getNews();
@@ -18,4 +27,15 @@ class HomeCubit extends Cubit<HomeState> {
         emit(HomeError(result.errorMessage));
     }
   }
+
+  Future<void> _getSource() async {}
 }
+
+sealed class HomeIntent {}
+
+class FetchNewsIntent extends HomeIntent {
+  String id;
+  FetchNewsIntent({required this.id});
+}
+
+class FetchSourceIntent extends HomeIntent {}

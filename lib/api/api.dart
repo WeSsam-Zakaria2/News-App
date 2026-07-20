@@ -11,8 +11,7 @@ abstract class Api {
     try {
       Uri url = Uri.https('newsapi.org', '/v2/everything', {
         'q': 'tesla',
-        'from': '2026-06-18',
-        'sortBy': 'publishedAt',
+
         'apiKey': '549c78ef1ec6401883c47daf8c5acb04',
       });
       var response = await http.get(url);
